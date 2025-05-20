@@ -4,7 +4,7 @@ export default function handler(req, res) {
   const APP_ID = '9e8dc5a99fb240a8bd6513630c14a45c';
   const APP_CERTIFICATE = '0b1ec530eb22494486b4c7a6b234b18c';
   const channelName = req.query.channelName;
-  const uid = parseInt(req.query.uid) || 1;
+  const uid = parseInt(req.query.uid) || 0;
 
   if (!channelName) {
     return res.status(400).json({ error: 'channelName requis' });
