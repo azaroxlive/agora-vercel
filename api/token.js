@@ -15,13 +15,15 @@ export default function handler(req, res) {
   const currentTime = Math.floor(Date.now() / 1000);
   const privilegeExpiredTs = currentTime + expireTime;
 
-  const token = RtcTokenBuilder.buildTokenWithUid(
-    APP_ID,
-    APP_CERTIFICATE,
+const role = req.query.role || 'audience'; // À passer depuis Flutter
+
+const token = new Agora.RtcTokenBuilder()
+  .buildTokenWithUid(
+    process.env.AGORA_APP_ID,
+    process.env.AGORA_APP_CERTIFICATE,
     channelName,
     uid,
-    role,
-    privilegeExpiredTs
+    role // 'audience' ou 'publisher'
   );
 
   res.status(200).json({ token });
