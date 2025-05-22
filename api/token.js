@@ -3,7 +3,7 @@ const Agora = require('agora-access-token');
 module.exports = (req, res) => {
   const appId = process.env.AGORA_APP_ID;
   const appCertificate = process.env.AGORA_APP_CERTIFICATE;
-  const channelName = req.query.channelName;
+  const channelName = req.query.channel;
   const uid = req.query.uid || 0;
   const role = Agora.RtcRole.PUBLISHER;
   const expiration = 86400; // 24h
