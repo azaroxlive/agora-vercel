@@ -13,14 +13,14 @@ module.exports = (req, res) => {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
-  const token = Agora.RtcTokenBuilder.buildTokenWithUid(
-    appId,
-    appCertificate,
-    channelName,
-    uid,
-    role,
-    expiration
-  );
+const token = Agora.RtcTokenBuilder.buildTokenWithAccount(
+  appId,
+  appCertificate,
+  channelName,
+  uid, // string comme 'uabc123'
+  role,
+  expiration
+);
 
   res.json({
     token: token,
