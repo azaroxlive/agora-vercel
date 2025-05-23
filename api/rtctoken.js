@@ -1,4 +1,5 @@
 const { RtcTokenBuilder, RtcRole } = require('agora-access-token');
+console.log("RTC TOKEN API CALLED");
 
 module.exports = (req, res) => {
   const appId = process.env.AGORA_APP_ID;
