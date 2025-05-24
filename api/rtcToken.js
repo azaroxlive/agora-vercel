@@ -6,24 +6,35 @@ module.exports = (req, res) => {
 
   const channelName = req.query.channelName;
   const uid = req.query.uid;
-  const role = RtcRole.PUBLISHER;
-  const expiration = 86400; // 24h
 
-  if (!appId || !appCertificate || !channelName || !uid) {
-    return res.status(400).json({ error: 'Missing required fields' });
+  if (!appId || !appCertificate) {
+    return res.status(500).json({ error: "App ID et certificat manquants dans les variables d'environnement" });
   }
 
-  const token = RtcTokenBuilder.buildTokenWithAccount(
-    appId,
-    appCertificate,
-    channelName,
-    uid,
-    role,
-    Math.floor(Date.now() / 1000) + expiration
-  );
+  if (!channelName || !uid) {
+    return res.status(400).json({ error: "Paramètres channelName et uid requis" });
+  }
 
-  return res.status(200).json({
-    token,
-    rtcUid: uid
-  });
+  const role = RtcRole.PUBLISHER;  // Host ou participant avec droit de parler
+  const expirationTimeInSeconds = 86400; // 24h
+  const currentTimestamp = Math.floor(Date.now() / 1000);
+  const privilegeExpireTs = currentTimestamp + expirationTimeInSeconds;
+
+  try {
+    const token = RtcTokenBuilder.buildTokenWithAccount(
+      appId,
+      appCertificate,
+      channelName,
+      uid,
+      role,
+      privilegeExpireTs
+    );
+
+    return res.status(200).json({
+      token,
+      rtcUid: uid,
+    });
+  } catch (error) {
+    return res.status(500).json({ error: "Erreur génération token: " + error.message });
+  }
 };
