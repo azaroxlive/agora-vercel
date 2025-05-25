@@ -1,24 +1,36 @@
-import { RtcTokenBuilder, RtcRole } from "agora-access-token";
+import { RtcTokenBuilder, RtcRole } from 'agora-access-token';
 
 export default function handler(req, res) {
-  const appId = "9e8dc5a99fb240a8bd6513630c14a45c";
-  const appCertificate = "0b1ec530eb22494486b4c7a6b234b18c";
-  const channelName = req.query.channel;
-  const uid = req.query.uid;
-  const role = RtcRole.PUBLISHER;
-  const expirationTimeInSeconds = 86400;
+  const appId = process.env.AGORA_APP_ID;
+  const appCertificate = process.env.AGORA_APP_CERTIFICATE;
+  const { channel, uid } = req.query;
 
+  if (!appId || !appCertificate) {
+    return res.status(500).json({ error: 'Missing App ID or Certificate' });
+  }
+
+  if (!channel || !uid) {
+    return res.status(400).json({ error: 'Missing channel or uid' });
+  }
+
+  const role = RtcRole.PUBLISHER;
+  const expirationTimeInSeconds = 84600; // 1h
   const currentTimestamp = Math.floor(Date.now() / 1000);
   const privilegeExpiredTs = currentTimestamp + expirationTimeInSeconds;
 
-  const token = RtcTokenBuilder.buildTokenWithUid(
-    appId,
-    appCertificate,
-    channelName,
-    parseInt(uid),
-    role,
-    privilegeExpiredTs
-  );
+  try {
+    const token = RtcTokenBuilder.buildTokenWithUid(
+      appId,
+      appCertificate,
+      channel,
+      parseInt(uid),
+      role,
+      privilegeExpiredTs
+    );
 
-  res.status(200).json({ token });
+    res.status(200).json({ token });
+  } catch (e) {
+    res.status(500).json({ error: 'Token generation failed', details: e.message });
+  }
 }
+
