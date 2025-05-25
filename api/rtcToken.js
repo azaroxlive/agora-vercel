@@ -1,40 +1,24 @@
-const { RtcTokenBuilder, RtcRole } = require("agora-access-token");
+import { RtcTokenBuilder, RtcRole } from "agora-access-token";
 
-module.exports = (req, res) => {
-  const appId = process.env.APP_ID;
-  const appCertificate = process.env.APP_CERTIFICATE;
-
-  const channelName = req.query.channelName;
+export default function handler(req, res) {
+  const appId = "TON_AGORA_APP_ID";
+  const appCertificate = "TON_AGORA_CERTIFICATE";
+  const channelName = req.query.channel;
   const uid = req.query.uid;
+  const role = RtcRole.PUBLISHER;
+  const expirationTimeInSeconds = 86400;
 
-  if (!appId || !appCertificate) {
-    return res.status(500).json({ error: "App ID et certificat manquants dans les variables d'environnement" });
-  }
-
-  if (!channelName || !uid) {
-    return res.status(400).json({ error: "Paramètres channelName et uid requis" });
-  }
-
-  const role = RtcRole.PUBLISHER;  // Host ou participant avec droit de parler
-  const expirationTimeInSeconds = 86400; // 24h
   const currentTimestamp = Math.floor(Date.now() / 1000);
-  const privilegeExpireTs = currentTimestamp + expirationTimeInSeconds;
+  const privilegeExpiredTs = currentTimestamp + expirationTimeInSeconds;
 
-  try {
-    const token = RtcTokenBuilder.buildTokenWithAccount(
-      appId,
-      appCertificate,
-      channelName,
-      uid,
-      role,
-      privilegeExpireTs
-    );
+  const token = RtcTokenBuilder.buildTokenWithUid(
+    appId,
+    appCertificate,
+    channelName,
+    parseInt(uid),
+    role,
+    privilegeExpiredTs
+  );
 
-    return res.status(200).json({
-      token,
-      rtcUid: uid,
-    });
-  } catch (error) {
-    return res.status(500).json({ error: "Erreur génération token: " + error.message });
-  }
-};
+  res.status(200).json({ token });
+}
