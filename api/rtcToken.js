@@ -1,8 +1,8 @@
 import { RtcTokenBuilder, RtcRole } from "agora-access-token";
 
 export default function handler(req, res) {
-  const appId = "TON_AGORA_APP_ID";
-  const appCertificate = "TON_AGORA_CERTIFICATE";
+  const appId = "9e8dc5a99fb240a8bd6513630c14a45c";
+  const appCertificate = "0b1ec530eb22494486b4c7a6b234b18c";
   const channelName = req.query.channel;
   const uid = req.query.uid;
   const role = RtcRole.PUBLISHER;
